@@ -1,19 +1,102 @@
+import { useState } from 'react'
+import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { Slider } from '@/components/ui/slider'
+import { Button } from '@/components/ui/button'
+import { useGetAdvice } from '@/hooks/useAdvice'
 
 export default function AdvicePage() {
+  const [question, setQuestion] = useState('')
+  const [days, setDays] = useState(7)
+  const adviceMutation = useGetAdvice()
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      await adviceMutation.mutateAsync({
+        question: question || undefined,
+        days,
+      })
+    } catch {
+      toast.error('Не удалось получить совет. Попробуйте позже.')
+    }
+  }
+
   return (
     <div className="max-w-[700px] mx-auto">
       <h1 className="text-2xl font-semibold mb-4">AI Советник</h1>
-      <Card>
+
+      <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Советы по питанию</CardTitle>
+          <CardTitle className="text-base">Задайте вопрос</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">
-            Здесь можно будет задать вопрос AI-советнику по питанию.
-          </p>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Textarea
+                placeholder="Например: стоит ли мне есть углеводы вечером?"
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                rows={3}
+              />
+              <p className="text-xs text-muted-foreground">
+                Можно оставить пустым — AI проанализирует ваше питание и даст общие рекомендации
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label>Анализировать за {days} {days === 1 ? 'день' : days < 5 ? 'дня' : 'дней'}</Label>
+              <Slider
+                value={[days]}
+                onValueChange={(v) => setDays(v[0])}
+                min={1}
+                max={30}
+                step={1}
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>1 день</span>
+                <span>30 дней</span>
+              </div>
+            </div>
+
+            <Button type="submit" disabled={adviceMutation.isPending}>
+              {adviceMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Анализируем ваше питание...
+                </>
+              ) : (
+                'Получить совет'
+              )}
+            </Button>
+          </form>
         </CardContent>
       </Card>
+
+      {adviceMutation.isPending && (
+        <Card>
+          <CardContent className="py-8 flex flex-col items-center gap-3">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">Это может занять 10-30 секунд...</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {adviceMutation.data && !adviceMutation.isPending && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Рекомендации</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
+              {adviceMutation.data.advice}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }

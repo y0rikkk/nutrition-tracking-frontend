@@ -34,3 +34,32 @@ export const manualFoodSchema = z.object({
 })
 
 export type ManualFoodFormData = z.infer<typeof manualFoodSchema>
+
+export const weightSchema = z.object({
+  date: z.string().min(1, 'Укажите дату'),
+  weight_kg: z.coerce.number().min(20, 'Мин. 20 кг').max(500, 'Макс. 500 кг'),
+  notes: z.string().optional(),
+})
+
+export type WeightFormData = z.infer<typeof weightSchema>
+
+export const goalSchema = z.object({
+  calories_kcal: z.coerce.number().min(1, 'Укажите калории'),
+  protein_g: z.coerce.number().min(0, 'Мин. 0'),
+  fat_g: z.coerce.number().min(0, 'Мин. 0'),
+  carbs_g: z.coerce.number().min(0, 'Мин. 0'),
+  started_at: z.string().min(1, 'Укажите дату'),
+  notes: z.string().optional(),
+})
+
+export type GoalFormData = z.infer<typeof goalSchema>
+
+export const profileSchema = z.object({
+  birth_date: z.string().min(1, 'Укажите дату рождения'),
+  gender: z.enum(['male', 'female']),
+  height_cm: z.coerce.number().min(50, 'Мин. 50 см').max(300, 'Макс. 300 см'),
+  weight_kg: z.coerce.number().min(20, 'Мин. 20 кг').max(500, 'Макс. 500 кг'),
+  activity_level: z.enum(['sedentary', 'lightly_active', 'moderately_active', 'very_active', 'extra_active']),
+})
+
+export type ProfileFormData = z.infer<typeof profileSchema>
