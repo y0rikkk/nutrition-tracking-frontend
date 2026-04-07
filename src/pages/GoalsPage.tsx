@@ -28,7 +28,7 @@ function formatDate(dateStr: string) {
 }
 
 export default function GoalsPage() {
-  const { data, isLoading } = useGoals()
+  const { data, isLoading, isError, refetch } = useGoals()
   const createGoal = useCreateGoal()
   const updateGoal = useUpdateGoal()
   const [showForm, setShowForm] = useState(false)
@@ -74,6 +74,15 @@ export default function GoalsPage() {
   return (
     <div className="max-w-2xl">
       <h1 className="text-2xl font-semibold mb-4">Цели по КБЖУ</h1>
+
+      {isError && (
+        <Card className="mb-4">
+          <CardContent className="py-6 text-center">
+            <p className="text-muted-foreground mb-3">Не удалось загрузить цели</p>
+            <Button onClick={() => refetch()} variant="outline">Повторить</Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Active goal */}
       {activeGoal ? (

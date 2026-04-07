@@ -25,7 +25,7 @@ function todayStr() {
 }
 
 export default function WeightPage() {
-  const { data, isLoading } = useWeightLogs()
+  const { data, isLoading, isError, refetch } = useWeightLogs()
   const addWeight = useAddWeight()
   const deleteWeight = useDeleteWeight()
   const user = useAuthStore((s) => s.user)
@@ -67,6 +67,15 @@ export default function WeightPage() {
   return (
     <div className="max-w-5xl">
       <h1 className="text-2xl font-semibold mb-4">Вес</h1>
+
+      {isError && (
+        <Card className="mb-4">
+          <CardContent className="py-6 text-center">
+            <p className="text-muted-foreground mb-3">Не удалось загрузить данные</p>
+            <Button onClick={() => refetch()} variant="outline">Повторить</Button>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left column */}

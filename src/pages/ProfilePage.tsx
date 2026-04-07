@@ -37,7 +37,7 @@ const genderLabels: Record<string, string> = {
 export default function ProfilePage() {
   const navigate = useNavigate()
   const { logout, refreshToken } = useAuthStore()
-  const { data: user } = useProfile()
+  const { data: user, isLoading, isError, refetch } = useProfile()
   const updateProfile = useUpdateProfile()
 
   const {
@@ -83,6 +83,32 @@ export default function ProfilePage() {
   const initials = user
     ? (user.full_name || user.username).slice(0, 2).toUpperCase()
     : '??'
+
+  if (isLoading) {
+    return (
+      <div className="max-w-4xl">
+        <h1 className="text-2xl font-semibold mb-4">Профиль</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="h-[250px] bg-muted rounded animate-pulse" />
+          <div className="h-[400px] bg-muted rounded animate-pulse" />
+        </div>
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="max-w-4xl">
+        <h1 className="text-2xl font-semibold mb-4">Профиль</h1>
+        <Card>
+          <CardContent className="py-6 text-center">
+            <p className="text-muted-foreground mb-3">Не удалось загрузить профиль</p>
+            <Button onClick={() => refetch()} variant="outline">Повторить</Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   return (
     <div className="max-w-4xl">

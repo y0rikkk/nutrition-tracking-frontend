@@ -66,7 +66,7 @@ export default function FoodsPage() {
     return p
   }, [debouncedSearch])
 
-  const { data, isLoading } = useFoodItems(params)
+  const { data, isLoading, isError, refetch } = useFoodItems(params)
   const deleteFood = useDeleteFood()
 
   const items = useMemo(() => {
@@ -119,6 +119,11 @@ export default function FoodsPage() {
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : isError ? (
+            <div className="text-center py-8">
+              <p className="text-sm text-muted-foreground mb-3">Не удалось загрузить продукты</p>
+              <Button onClick={() => refetch()} variant="outline" size="sm">Повторить</Button>
             </div>
           ) : items.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-8">Продукты не найдены</p>
