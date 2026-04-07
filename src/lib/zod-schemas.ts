@@ -63,3 +63,15 @@ export const profileSchema = z.object({
 })
 
 export type ProfileFormData = z.infer<typeof profileSchema>
+
+export const foodItemSchema = z.object({
+  name: z.string().min(1, 'Введите название'),
+  brand: z.string().optional(),
+  calories_per_100g: z.coerce.number().min(0, 'Мин. 0'),
+  protein_per_100g: z.coerce.number().min(0, 'Мин. 0'),
+  fat_per_100g: z.coerce.number().min(0, 'Мин. 0'),
+  carbs_per_100g: z.coerce.number().min(0, 'Мин. 0'),
+  barcode: z.string().optional(),
+})
+
+export type FoodItemFormData = z.infer<typeof foodItemSchema>

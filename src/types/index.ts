@@ -24,6 +24,11 @@ export interface UserOut {
   updated_at: string
 }
 
+export interface UserShort {
+  id: string
+  username: string
+}
+
 export interface FoodItemOut {
   id: string
   name: string
@@ -35,6 +40,8 @@ export interface FoodItemOut {
   barcode: string | null
   created_at: string
   updated_at: string
+  creator: UserShort | null
+  modifier: UserShort | null
 }
 
 export interface MealFoodItemOut {

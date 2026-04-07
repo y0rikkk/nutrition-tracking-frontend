@@ -30,7 +30,12 @@ export function MealCard({ mealType, meal, onAddFood, onDeleteItem }: MealCardPr
           <span className="font-medium">{config.label}</span>
         </div>
         {totalCalories > 0 && (
-          <span className="text-sm text-muted-foreground">{Math.round(totalCalories)} ккал</span>
+          <div className="text-sm text-muted-foreground text-right">
+            <span>{Math.round(totalCalories)} ккал</span>
+            <span className="ml-2 text-xs">
+              {Math.round(meal!.protein_g)}б {Math.round(meal!.fat_g)}ж {Math.round(meal!.carbs_g)}у
+            </span>
+          </div>
         )}
       </CardHeader>
 
@@ -44,7 +49,12 @@ export function MealCard({ mealType, meal, onAddFood, onDeleteItem }: MealCardPr
                   <span className="text-muted-foreground ml-2">{Math.round(item.amount_g)}г</span>
                 </div>
                 <div className="flex items-center gap-2 ml-2 shrink-0">
-                  <span className="text-muted-foreground">{Math.round(item.calories_kcal)} ккал</span>
+                  <span className="text-muted-foreground">
+                    {Math.round(item.calories_kcal)} ккал
+                    <span className="ml-1 text-xs opacity-70">
+                      {Math.round(item.protein_g)}б {Math.round(item.fat_g)}ж {Math.round(item.carbs_g)}у
+                    </span>
+                  </span>
                   <Button
                     variant="ghost"
                     size="xs"

@@ -37,7 +37,6 @@ export function AddFoodDialog({ open, onOpenChange, mealType, mealId, date }: Ad
   }
 
   const handleAdded = () => {
-    toast.success('Блюдо добавлено')
     handleClose()
   }
 
@@ -60,35 +59,15 @@ export function AddFoodDialog({ open, onOpenChange, mealType, mealId, date }: Ad
           </Button>
         )}
 
-        {step === 'choose' && (
-          <ChooseStep onSelect={setStep} />
-        )}
+        {step === 'choose' && <ChooseStep onSelect={setStep} />}
         {step === 'photo' && (
-          <PhotoStep
-            mutation={addFoodItem}
-            mealType={mealType}
-            mealId={mealId}
-            date={date}
-            onDone={handleAdded}
-          />
+          <PhotoStep mutation={addFoodItem} mealType={mealType} mealId={mealId} date={date} onDone={handleAdded} />
         )}
         {step === 'search' && (
-          <SearchStep
-            mutation={addFoodItem}
-            mealType={mealType}
-            mealId={mealId}
-            date={date}
-            onDone={handleAdded}
-          />
+          <SearchStep mutation={addFoodItem} mealType={mealType} mealId={mealId} date={date} onDone={handleAdded} />
         )}
         {step === 'manual' && (
-          <ManualStep
-            mutation={addFoodItem}
-            mealType={mealType}
-            mealId={mealId}
-            date={date}
-            onDone={handleAdded}
-          />
+          <ManualStep mutation={addFoodItem} mealType={mealType} mealId={mealId} date={date} onDone={handleAdded} />
         )}
       </DialogContent>
     </Dialog>
@@ -126,7 +105,7 @@ function ChooseStep({ onSelect }: { onSelect: (step: Step) => void }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* Step: Photo analysis                                                */
+/* Step: Photo analysis (multi-select)                                 */
 /* ------------------------------------------------------------------ */
 
 interface StepProps {
@@ -140,6 +119,8 @@ interface StepProps {
 function PhotoStep({ mutation, mealType, mealId, date, onDone }: StepProps) {
   const analyzePhoto = useAnalyzePhoto()
   const [dishes, setDishes] = useState<RecognizedDish[] | null>(null)
+  const [selected, setSelected] = useState<Set<number>>(new Set())
+  const [isAdding, setIsAdding] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -148,8 +129,9 @@ function PhotoStep({ mutation, mealType, mealId, date, onDone }: StepProps) {
     try {
       const result = await analyzePhoto.mutateAsync(file)
       setDishes(result.dishes)
+      setSelected(new Set(result.dishes.map((_, i) => i)))
     } catch {
-      toast.error('Не удалось распознать блюда')
+      toast.error('Не удалось распознать блюда. Попробуйте ещё раз через минуту')
     }
   }
 
@@ -163,25 +145,44 @@ function PhotoStep({ mutation, mealType, mealId, date, onDone }: StepProps) {
     setDishes(updated)
   }
 
-  const handleAddDish = async (dish: RecognizedDish) => {
+  const toggleSelect = (index: number) => {
+    setSelected((prev) => {
+      const next = new Set(prev)
+      if (next.has(index)) next.delete(index)
+      else next.add(index)
+      return next
+    })
+  }
+
+  const handleAddSelected = async () => {
+    if (!dishes || selected.size === 0) return
+    setIsAdding(true)
+    let mealEntryId = mealId
     try {
-      await mutation.mutateAsync({
-        date,
-        mealType,
-        existingMealId: mealId,
-        foodData: {
-          food_item_id: null,
-          custom_name: dish.name,
-          amount_g: dish.amount_g,
-          calories_kcal: dish.calories_kcal,
-          protein_g: dish.protein_g,
-          fat_g: dish.fat_g,
-          carbs_g: dish.carbs_g,
-        },
-      })
+      for (const i of selected) {
+        const dish = dishes[i]
+        const result = await mutation.mutateAsync({
+          date,
+          mealType,
+          existingMealId: mealEntryId,
+          foodData: {
+            food_item_id: null,
+            custom_name: dish.name,
+            amount_g: dish.amount_g,
+            calories_kcal: dish.calories_kcal,
+            protein_g: dish.protein_g,
+            fat_g: dish.fat_g,
+            carbs_g: dish.carbs_g,
+          },
+        })
+        if (!mealEntryId) mealEntryId = result.meal_entry_id
+      }
+      toast.success(`Добавлено блюд: ${selected.size}`)
       onDone()
     } catch {
       toast.error('Ошибка при добавлении')
+    } finally {
+      setIsAdding(false)
     }
   }
 
@@ -219,14 +220,25 @@ function PhotoStep({ mutation, mealType, mealId, date, onDone }: StepProps) {
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-sm text-muted-foreground">Найдено блюд: {dishes.length}. Проверьте данные и добавьте.</p>
+      <p className="text-sm text-muted-foreground">Найдено блюд: {dishes.length}. Отметьте нужные и добавьте.</p>
       {dishes.map((dish, i) => (
-        <div key={i} className="border rounded-lg p-3 flex flex-col gap-2">
-          <Input
-            value={dish.name}
-            onChange={(e) => handleUpdateDish(i, 'name', e.target.value)}
-            className="font-medium"
-          />
+        <div
+          key={i}
+          className={`border rounded-lg p-3 flex flex-col gap-2 transition-colors ${selected.has(i) ? 'border-primary/50 bg-primary/5' : 'opacity-60'}`}
+        >
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={selected.has(i)}
+              onChange={() => toggleSelect(i)}
+              className="h-4 w-4 rounded"
+            />
+            <Input
+              value={dish.name}
+              onChange={(e) => handleUpdateDish(i, 'name', e.target.value)}
+              className="font-medium"
+            />
+          </label>
           <div className="grid grid-cols-5 gap-2">
             {([
               ['amount_g', 'г'],
@@ -247,16 +259,11 @@ function PhotoStep({ mutation, mealType, mealId, date, onDone }: StepProps) {
               </div>
             ))}
           </div>
-          <Button
-            size="sm"
-            className="w-full"
-            onClick={() => handleAddDish(dish)}
-            disabled={mutation.isPending}
-          >
-            {mutation.isPending ? 'Добавление...' : 'Добавить'}
-          </Button>
         </div>
       ))}
+      <Button className="w-full" onClick={handleAddSelected} disabled={isAdding || selected.size === 0}>
+        {isAdding ? 'Добавление...' : `Добавить выбранные (${selected.size})`}
+      </Button>
     </div>
   )
 }
@@ -292,6 +299,7 @@ function SearchStep({ mutation, mealType, mealId, date, onDone }: StepProps) {
           amount_g: amountG,
         },
       })
+      toast.success('Блюдо добавлено')
       onDone()
     } catch {
       toast.error('Ошибка при добавлении')
@@ -419,6 +427,7 @@ function ManualStep({ mutation, mealType, mealId, date, onDone }: StepProps) {
           carbs_g: data.carbs_g,
         },
       })
+      toast.success('Блюдо добавлено')
       onDone()
     } catch {
       toast.error('Ошибка при добавлении')

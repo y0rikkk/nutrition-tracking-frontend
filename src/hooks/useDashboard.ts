@@ -25,8 +25,13 @@ export function useAddFoodItem() {
     mutationFn: async ({ date, mealType, existingMealId, foodData }: AddFoodItemParams) => {
       let mealEntryId = existingMealId
       if (!mealEntryId) {
-        const meal = await mealsApi.createMeal({ date, meal_type: mealType })
-        mealEntryId = meal.id
+        const existing = await mealsApi.find({ date, meal_type: mealType })
+        if (existing.items.length > 0) {
+          mealEntryId = existing.items[0].id
+        } else {
+          const meal = await mealsApi.createMeal({ date, meal_type: mealType })
+          mealEntryId = meal.id
+        }
       }
       return mealsApi.addFoodItem({ ...foodData, meal_entry_id: mealEntryId } as CreateMealFoodItemRequest)
     },

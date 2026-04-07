@@ -10,6 +10,7 @@ import WeightPage from '@/pages/WeightPage'
 import GoalsPage from '@/pages/GoalsPage'
 import AdvicePage from '@/pages/AdvicePage'
 import ProfilePage from '@/pages/ProfilePage'
+import FoodsPage from '@/pages/FoodsPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,6 +46,7 @@ export default function App() {
             <Route path="weight" element={<WeightPage />} />
             <Route path="goals" element={<GoalsPage />} />
             <Route path="advice" element={<AdvicePage />} />
+            <Route path="foods" element={<FoodsPage />} />
             <Route path="profile" element={<ProfilePage />} />
           </Route>
 

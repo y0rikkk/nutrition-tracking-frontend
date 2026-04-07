@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Home, Weight, Target, Lightbulb, User, LogOut } from 'lucide-react'
+import { Home, Weight, Target, Lightbulb, UtensilsCrossed, User, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useAuthStore } from '@/store/auth'
@@ -10,6 +10,7 @@ const navItems = [
   { to: '/weight', icon: Weight, label: 'Вес' },
   { to: '/goals', icon: Target, label: 'Цели' },
   { to: '/advice', icon: Lightbulb, label: 'Советы' },
+  { to: '/foods', icon: UtensilsCrossed, label: 'Продукты' },
 ]
 
 export function Sidebar() {

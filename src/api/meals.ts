@@ -1,5 +1,5 @@
 import client from './client'
-import type { MealEntryDetailOut, MealFoodItemOut, MealType } from '@/types'
+import type { MealEntryDetailOut, MealFoodItemOut, MealType, PagedResponse } from '@/types'
 
 export interface CreateMealFoodItemFromDB {
   meal_entry_id: string
@@ -21,6 +21,10 @@ export interface CreateMealFoodItemManual {
 export type CreateMealFoodItemRequest = CreateMealFoodItemFromDB | CreateMealFoodItemManual
 
 export const mealsApi = {
+  find(params: { date: string; meal_type: MealType }): Promise<PagedResponse<MealEntryDetailOut>> {
+    return client.get('/meals/', { params }).then((r) => r.data)
+  },
+
   createMeal(data: { date: string; meal_type: MealType }): Promise<MealEntryDetailOut> {
     return client.post('/meals/', data).then((r) => r.data)
   },
