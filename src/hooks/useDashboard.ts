@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { dashboardApi } from '@/api/dashboard'
 import { mealsApi } from '@/api/meals'
-import type { CreateMealFoodItemRequest } from '@/api/meals'
 import type { MealType } from '@/types'
 
 export function useDashboard(date: string) {
@@ -11,11 +10,22 @@ export function useDashboard(date: string) {
   })
 }
 
+type FoodDataFromDB = { food_item_id: string; amount_g: number }
+type FoodDataManual = {
+  food_item_id: null
+  custom_name: string
+  amount_g: number
+  calories_kcal: number
+  protein_g: number
+  fat_g: number
+  carbs_g: number
+}
+
 interface AddFoodItemParams {
   date: string
   mealType: MealType
   existingMealId?: string
-  foodData: Omit<CreateMealFoodItemRequest, 'meal_entry_id'>
+  foodData: FoodDataFromDB | FoodDataManual
 }
 
 export function useAddFoodItem() {
@@ -33,7 +43,7 @@ export function useAddFoodItem() {
           mealEntryId = meal.id
         }
       }
-      return mealsApi.addFoodItem({ ...foodData, meal_entry_id: mealEntryId } as CreateMealFoodItemRequest)
+      return mealsApi.addFoodItem({ ...foodData, meal_entry_id: mealEntryId } as Parameters<typeof mealsApi.addFoodItem>[0])
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['dashboard', variables.date] })

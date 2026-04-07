@@ -1,0 +1,30 @@
+name: Deploy to homelab
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_NAME: nutrition-tracking-frontend
+
+jobs:
+  deploy:
+    runs-on: homelab
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: |
+          cat > .env << EOF
+          VITE_API_URL=${{ secrets.VITE_API_URL }}
+          FRONTEND_PORT=${{ secrets.FRONTEND_PORT }}
+          EOF
+
+      - name: Build and restart services
+        run: docker compose -p ${{ env.PROJECT_NAME }} up --build -d
+
+      - name: Clean up old images
+        run: docker image prune -f --filter "label=com.docker.compose.project=${{ env.PROJECT_NAME }}"
