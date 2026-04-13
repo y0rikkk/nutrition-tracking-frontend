@@ -153,8 +153,16 @@ function PhotoStep({ mutation, mealType, mealId, date, onDone }: StepProps) {
     const file = e.target.files?.[0]
     if (!file) return
     try {
-      const jpeg = file.type === 'image/jpeg' ? file : await convertToJpeg(file)
-      const result = await analyzePhoto.mutateAsync(jpeg)
+      let fileToSend = file
+      if (file.type !== 'image/jpeg' && file.type !== 'image/png' && file.type !== 'image/webp') {
+        try {
+          fileToSend = await convertToJpeg(file)
+        } catch {
+          toast.error('Не удалось обработать формат изображения. Попробуйте сделать скриншот фото и загрузить его.')
+          return
+        }
+      }
+      const result = await analyzePhoto.mutateAsync(fileToSend)
       setDishes(result.dishes)
       setSelected(new Set(result.dishes.map((_, i) => i)))
     } catch (err: unknown) {
@@ -240,7 +248,7 @@ function PhotoStep({ mutation, mealType, mealId, date, onDone }: StepProps) {
         >
           <Upload className="h-8 w-8 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">Нажмите для загрузки фото</p>
-          <p className="text-xs text-muted-foreground">JPG, PNG, WebP или HEIF</p>
+          <p className="text-xs text-muted-foreground">JPG, PNG, WebP или HEIC (только Safari)</p>
         </div>
         <input
           ref={fileRef}
