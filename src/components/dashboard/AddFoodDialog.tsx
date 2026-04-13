@@ -130,8 +130,16 @@ function PhotoStep({ mutation, mealType, mealId, date, onDone }: StepProps) {
       const result = await analyzePhoto.mutateAsync(file)
       setDishes(result.dishes)
       setSelected(new Set(result.dishes.map((_, i) => i)))
-    } catch {
-      toast.error('Не удалось распознать блюда. Попробуйте ещё раз через минуту')
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      if (status === 502) {
+        toast.error('Ошибка при обращении к ИИ сервису. Попробуйте ещё раз через минуту')
+      } else if (detail) {
+        toast.error(detail)
+      } else {
+        toast.error('Не удалось распознать блюда')
+      }
     }
   }
 
