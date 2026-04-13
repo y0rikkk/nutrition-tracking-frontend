@@ -82,9 +82,13 @@ export default function DashboardPage() {
           >
             {formatDateRu(date)}
           </button>
-          <Button variant="ghost" size="icon" onClick={() => setDate(shiftDate(date, 1))}>
-            <ChevronRight className="h-5 w-5" />
-          </Button>
+          {date < todayStr() ? (
+            <Button variant="ghost" size="icon" onClick={() => setDate(shiftDate(date, 1))}>
+              <ChevronRight className="h-5 w-5" />
+            </Button>
+          ) : (
+            <div className="w-9" />
+          )}
         </div>
 
         {/* Calorie ring */}

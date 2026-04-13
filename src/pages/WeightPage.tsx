@@ -89,7 +89,7 @@ export default function WeightPage() {
               <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
                 <div className="flex flex-col gap-1">
                   <Label>Дата</Label>
-                  <Input type="date" {...register('date')} />
+                  <Input type="date" max={todayStr()} {...register('date')} />
                   {errors.date && <p className="text-destructive text-xs">{errors.date.message}</p>}
                 </div>
                 <div className="flex flex-col gap-1">

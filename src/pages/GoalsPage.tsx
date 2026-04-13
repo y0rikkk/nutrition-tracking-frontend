@@ -170,7 +170,7 @@ export default function GoalsPage() {
               </div>
               <div className="flex flex-col gap-1">
                 <Label>Дата начала</Label>
-                <Input type="date" {...register('started_at')} />
+                <Input type="date" max={todayStr()} {...register('started_at')} />
                 {errors.started_at && <p className="text-destructive text-xs">{errors.started_at.message}</p>}
               </div>
               <div className="flex flex-col gap-1">
