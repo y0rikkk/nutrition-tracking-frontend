@@ -116,6 +116,32 @@ interface StepProps {
   onDone: () => void
 }
 
+function convertToJpeg(file: File): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = img.width
+      canvas.height = img.height
+      canvas.getContext('2d')!.drawImage(img, 0, 0)
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) return reject(new Error('Failed to convert image'))
+          resolve(new File([blob], file.name.replace(/\.\w+$/, '.jpg'), { type: 'image/jpeg' }))
+        },
+        'image/jpeg',
+        0.9,
+      )
+      URL.revokeObjectURL(img.src)
+    }
+    img.onerror = () => {
+      URL.revokeObjectURL(img.src)
+      reject(new Error('Failed to load image'))
+    }
+    img.src = URL.createObjectURL(file)
+  })
+}
+
 function PhotoStep({ mutation, mealType, mealId, date, onDone }: StepProps) {
   const analyzePhoto = useAnalyzePhoto()
   const [dishes, setDishes] = useState<RecognizedDish[] | null>(null)
@@ -127,7 +153,8 @@ function PhotoStep({ mutation, mealType, mealId, date, onDone }: StepProps) {
     const file = e.target.files?.[0]
     if (!file) return
     try {
-      const result = await analyzePhoto.mutateAsync(file)
+      const jpeg = file.type === 'image/jpeg' ? file : await convertToJpeg(file)
+      const result = await analyzePhoto.mutateAsync(jpeg)
       setDishes(result.dishes)
       setSelected(new Set(result.dishes.map((_, i) => i)))
     } catch (err: unknown) {
@@ -213,12 +240,12 @@ function PhotoStep({ mutation, mealType, mealId, date, onDone }: StepProps) {
         >
           <Upload className="h-8 w-8 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">Нажмите для загрузки фото</p>
-          <p className="text-xs text-muted-foreground">JPG, PNG или WebP</p>
+          <p className="text-xs text-muted-foreground">JPG, PNG, WebP или HEIF</p>
         </div>
         <input
           ref={fileRef}
           type="file"
-          accept="image/jpeg,image/png,image/webp"
+          accept="image/*"
           className="hidden"
           onChange={handleFileChange}
         />
