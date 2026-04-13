@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight, Weight } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -117,22 +117,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Weight card */}
-        <Card>
-          <CardContent className="py-4 flex items-center gap-3">
-            <Weight className="h-5 w-5 text-muted-foreground" />
-            {dashboard.latest_weight ? (
-              <div>
-                <span className="font-medium">{dashboard.latest_weight.weight_kg} кг</span>
-                <p className="text-xs text-muted-foreground">
-                  обновлено {new Date(dashboard.latest_weight.date + 'T12:00:00').toLocaleDateString('ru-RU')}
-                </p>
-              </div>
-            ) : (
-              <span className="text-sm text-muted-foreground">Нет данных о весе</span>
-            )}
-          </CardContent>
-        </Card>
       </div>
 
       {/* Right column */}

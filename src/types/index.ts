@@ -127,7 +127,6 @@ export interface DashboardOut {
   } | null
   meal_breakdown: Array<{ meal_type: MealType; totals: MacroTotals }>
   meals: MealEntryDetailOut[]
-  latest_weight: WeightLogOut | null
 }
 
 export interface RecognizedDish {
