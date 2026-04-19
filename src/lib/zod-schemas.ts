@@ -27,7 +27,7 @@ export const registerSchema = z.object({
 export type RegisterFormData = z.infer<typeof registerSchema>
 
 export const manualFoodSchema = z.object({
-  custom_name: z.string().min(1, 'Введите название'),
+  name: z.string().min(1, 'Введите название'),
   amount_g: coerceNumber().pipe(z.number().min(1, 'Мин. 1 г')),
   calories_kcal: coerceNumber().pipe(z.number().min(0, 'Мин. 0')),
   protein_g: coerceNumber().pipe(z.number().min(0, 'Мин. 0')),

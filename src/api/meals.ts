@@ -10,7 +10,7 @@ export interface CreateMealFoodItemFromDB {
 export interface CreateMealFoodItemManual {
   meal_entry_id: string
   food_item_id: null
-  custom_name: string
+  name: string
   amount_g: number
   calories_kcal: number
   protein_g: number

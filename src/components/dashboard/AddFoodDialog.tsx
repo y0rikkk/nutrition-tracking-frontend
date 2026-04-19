@@ -210,7 +210,7 @@ function PhotoStep({ mutation, mealType, mealId, date, onDone }: StepProps) {
           existingMealId: mealEntryId,
           foodData: {
             food_item_id: null,
-            custom_name: dish.name,
+            name: dish.name,
             amount_g: dish.amount_g,
             calories_kcal: dish.calories_kcal,
             protein_g: dish.protein_g,
@@ -462,7 +462,7 @@ function ManualStep({ mutation, mealType, mealId, date, onDone }: StepProps) {
         existingMealId: mealId,
         foodData: {
           food_item_id: null,
-          custom_name: data.custom_name,
+          name: data.name,
           amount_g: data.amount_g,
           calories_kcal: data.calories_kcal,
           protein_g: data.protein_g,
@@ -481,8 +481,8 @@ function ManualStep({ mutation, mealType, mealId, date, onDone }: StepProps) {
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
       <div className="flex flex-col gap-1">
         <Label>Название</Label>
-        <Input {...register('custom_name')} placeholder="Домашний борщ" />
-        {errors.custom_name && <p className="text-destructive text-xs">{errors.custom_name.message}</p>}
+        <Input {...register('name')} placeholder="Домашний борщ" />
+        {errors.name && <p className="text-destructive text-xs">{errors.name.message}</p>}
       </div>
 
       <div className="flex flex-col gap-1">

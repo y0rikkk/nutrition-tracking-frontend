@@ -48,7 +48,7 @@ export interface MealFoodItemOut {
   id: string
   meal_entry_id: string
   food_item_id: string | null
-  custom_name: string | null
+  name: string | null
   amount_g: number
   calories_kcal: number
   protein_g: number

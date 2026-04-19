@@ -45,7 +45,7 @@ export function MealCard({ mealType, meal, onAddFood, onDeleteItem }: MealCardPr
             {items.map((item) => (
               <div key={item.id} className="flex items-center justify-between text-sm group">
                 <div className="flex-1 min-w-0">
-                  <span className="truncate">{item.custom_name}</span>
+                  <span className="truncate">{item.name || 'Без названия'}</span>
                   <span className="text-muted-foreground ml-2">{Math.round(item.amount_g)}г</span>
                 </div>
                 <div className="flex items-center gap-2 ml-2 shrink-0">

@@ -13,7 +13,7 @@ export function useDashboard(date: string) {
 type FoodDataFromDB = { food_item_id: string; amount_g: number }
 type FoodDataManual = {
   food_item_id: null
-  custom_name: string
+  name: string
   amount_g: number
   calories_kcal: number
   protein_g: number
