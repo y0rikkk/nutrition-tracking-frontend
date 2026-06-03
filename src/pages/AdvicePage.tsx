@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Info } from 'lucide-react'
 import { toast } from 'sonner'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
@@ -28,6 +28,13 @@ export default function AdvicePage() {
   return (
     <div className="max-w-[700px] mx-auto">
       <h1 className="text-2xl font-semibold mb-4">AI Советник</h1>
+
+      <div className="flex gap-3 p-3 mb-4 rounded-md border border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-950/30">
+        <Info className="h-4 w-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-500" />
+        <p className="text-xs text-amber-900 dark:text-amber-200 leading-relaxed">
+          Рекомендации генерируются ИИ и могут содержать неточности. Они не являются медицинской или диетологической консультацией и не заменяют её. Перед изменением рациона, особенно при наличии заболеваний, аллергий или беременности, проконсультируйтесь с врачом или дипломированным диетологом.
+        </p>
+      </div>
 
       <Card className="mb-6">
         <CardHeader>
